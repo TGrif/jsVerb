@@ -1,2 +1,2 @@
 # jsVerb
-jsPlay Reverb
+jsPlay Digital Reverb
