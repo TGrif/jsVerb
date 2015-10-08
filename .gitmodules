@@ -1,0 +1,3 @@
+[submodule "lib/jqskin"]
+	path = lib/jqskin
+	url = https://github.com/aike/jqskin.git
