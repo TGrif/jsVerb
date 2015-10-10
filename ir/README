@@ -1,0 +1,19 @@
+
+Impulse Response from:
+
+
+    https://theimpulsefactory.wordpress.com
+
+        chamber:
+            Home Hallway -> Home Hallway Omni
+            L-Shape Hall -> L-Shape Hall Stereo
+            Long Hallway -> Long Hallway Cardioid
+
+        room:
+            Home Studio
+            Tiny Bathroom
+
+
+
+http://www.openairlib.net/ 
+http://www.html5rocks.com/en/tutorials/webaudio/games/
