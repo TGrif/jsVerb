@@ -1,0 +1,39 @@
+ 
+{
+    
+    "reverbSet": {
+        
+        "room": [
+            "Home Studio",
+            "Tiny Bathroom",
+            "Large Church",
+            "Small Church"
+          ],
+           
+        "chamber": [
+            "Home Hallway",
+            "L-Shape Hall",
+            "Long Hallway"
+          ],
+           
+        "hall": [
+            "lyd3_000_ortf_48k",
+            "ir_row_3l_centre_mid",
+            "jazz_hall"
+          ],
+          
+        "fun": [
+            "telephone",
+            "muffler",
+            "echo",
+            "spring"
+          ],
+          
+        "computed": [
+            "computed bank 1"
+          ]
+        
+    }
+    
+}
+

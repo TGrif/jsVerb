@@ -1,0 +1,137 @@
+ 
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+#rack {
+    width: 1180px;
+    height: 150px;
+    background-color: black;
+    font-size: 13px;
+}
+
+#power {
+    float: right;
+    width: 18px;
+    height: 18px;
+    margin-right: 20px;
+    margin-top: 10px;
+    background-color: blue;
+    cursor: pointer;
+}
+
+#screen {
+    position: absolute;
+    width: 440px;
+    height: 60px;
+    top: 33px;
+    left: 50px;
+    line-height: 60px;
+    /*padding-left: 20px;*/
+    background-color: #00FFFF;
+}
+
+#bank-label {
+    position: absolute;
+    color: white;
+    top: 35px;
+    left: 563px;
+    font-style: italic;
+}
+
+#screen_set {
+    /*float: right;*/
+    margin-left: 100px;
+    text-transform: uppercase;
+}
+
+/*#screen_display_bank {
+    position: absolute;
+    left: 200px;
+}*/
+
+#screen_bank {
+    float: right;
+    margin-right: 30px;
+}
+
+#set_label {
+    position: absolute;
+    color: white;
+    top: 35px;
+    left: 650px;
+    font-style: italic;
+}
+
+#bypass {
+    /*position: absolute;*/
+    float: right;
+    margin-right: 50px;
+    color: white;
+    font-size: 15px;
+}
+
+#wet_knob_label {
+    position: absolute;
+    margin-left: 867px;
+    margin-top: 35px;
+    color: white;
+    font-style: italic;
+}
+
+#dry_knob_label {
+    position: absolute;
+    margin-left: 778px;
+    margin-top: 35px;
+    color: white;
+    font-style: italic;    
+}
+
+#bank-arrow-left {
+    position: absolute;
+    width: 35px;
+    margin-left: 547px;
+    margin-top: 58px;
+}
+
+#bank-arrow-right {
+    position: absolute;
+    width: 35px;
+    margin-left: 574px;
+    margin-top: 58px;
+}
+
+.arrow {
+    background-color: white;
+}
+
+#set_btn {
+    margin-left: 646px;
+    margin-top: 62px;
+    position: absolute;
+    width: 28px;
+}
+
+.arrow:hover, #set_btn:hover {
+    cursor: pointer;
+    background-color: lightgreen !important;    
+}
+
+/*#jack_in {
+    margin-left: 1064px;
+    margin-top: 81px;
+    position: absolute;
+    width: 49px;
+}
+
+#jack_out {
+    margin-left: 998px;
+    margin-top: 81px;
+    position: absolute;
+    width: 49px;
+}*/
