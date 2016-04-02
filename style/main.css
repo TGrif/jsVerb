@@ -4,10 +4,6 @@
     margin: 0;
 }
 
-.hidden {
-    display: none;
-}
-
 #rack {
     width: 1180px;
     height: 150px;
@@ -34,6 +30,11 @@
     line-height: 60px;
     /*padding-left: 20px;*/
     background-color: #00FFFF;
+	border-radius: 2px;
+}
+
+#screen_title {
+	padding-left: 20px;
 }
 
 #bank-label {
@@ -68,12 +69,19 @@
     font-style: italic;
 }
 
-#bypass {
-    /*position: absolute;*/
+/*#bypass {
+	margin-top: 10px;
     float: right;
     margin-right: 50px;
     color: white;
-    font-size: 15px;
+	font-style: italic;
+}*/
+#bypass_label {
+	margin-top: 10px;
+    float: right;
+    margin-right: 50px;
+    color: white;
+	font-style: italic;
 }
 
 #wet_knob_label {
@@ -120,6 +128,10 @@
 .arrow:hover, #set_btn:hover {
     cursor: pointer;
     background-color: lightgreen !important;    
+}
+
+#bypass {
+	cursor: pointer;
 }
 
 /*#jack_in {
