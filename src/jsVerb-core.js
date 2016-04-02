@@ -70,7 +70,8 @@
 
 
     function loadImpuseResponse(convolverNode, ir) {
-
+		//console.log('loading ir');
+		
         try {
             
             var ajaxRequest = new XMLHttpRequest();
@@ -97,7 +98,7 @@
 
 
 
-			//TODO DRY
+			
     var 
 
         request = new XMLHttpRequest(),
@@ -137,7 +138,7 @@
         console.info('starting sound...');
     
 
-//    source.start(0);
+    source.start(0);
 
 
 

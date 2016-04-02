@@ -5,20 +5,30 @@
 }
 
 #rack {
+	position: absolute;
     width: 1180px;
     height: 150px;
     background-color: black;
     font-size: 13px;
 }
 
+#bypass {
+	cursor: pointer;
+}
+
 #power {
     float: right;
-    width: 18px;
+    cursor: pointer;
+}
+
+#power_led {
+	float: right;
+	width: 18px;
     height: 18px;
     margin-right: 20px;
-    margin-top: 10px;
+    margin-top: 110px;
     background-color: blue;
-    cursor: pointer;
+	display: none;
 }
 
 #screen {
@@ -27,14 +37,34 @@
     height: 60px;
     top: 33px;
     left: 50px;
-    line-height: 60px;
-    /*padding-left: 20px;*/
-    background-color: #00FFFF;
+	background-color: #009E9E;
 	border-radius: 2px;
 }
 
 #screen_title {
 	padding-left: 20px;
+	padding-top: 20px;
+	display: inline-block;
+}
+
+#screen_bank {
+    float: right;
+    margin-right: 30px;
+	margin-top: 20px;
+}
+
+#screen_set {
+    margin-left: 100px;
+    text-transform: uppercase;
+}
+
+#screen_bypass {
+	position: absolute;
+	margin-left: 90px;
+	color: tomato;
+	font-size: 10px;
+	font-weight: bold;
+	display: none;
 }
 
 #bank-label {
@@ -45,22 +75,6 @@
     font-style: italic;
 }
 
-#screen_set {
-    /*float: right;*/
-    margin-left: 100px;
-    text-transform: uppercase;
-}
-
-/*#screen_display_bank {
-    position: absolute;
-    left: 200px;
-}*/
-
-#screen_bank {
-    float: right;
-    margin-right: 30px;
-}
-
 #set_label {
     position: absolute;
     color: white;
@@ -69,17 +83,20 @@
     font-style: italic;
 }
 
-/*#bypass {
+#bypass_label {
+	position: absolute;
+	display: inline-block;
 	margin-top: 10px;
-    float: right;
-    margin-right: 50px;
+	margin-left: 1045px;
     color: white;
 	font-style: italic;
-}*/
-#bypass_label {
+}
+
+#power_label {
+	position: absolute;
+	display: inline-block;
 	margin-top: 10px;
-    float: right;
-    margin-right: 50px;
+	margin-left: 1120px;
     color: white;
 	font-style: italic;
 }
@@ -125,14 +142,11 @@
     width: 28px;
 }
 
-.arrow:hover, #set_btn:hover {
+.arrow:hover/*, #set_btn:hover*/ {
     cursor: pointer;
     background-color: lightgreen !important;    
 }
 
-#bypass {
-	cursor: pointer;
-}
 
 /*#jack_in {
     margin-left: 1064px;

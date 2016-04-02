@@ -21,7 +21,7 @@ $(function() {
 			currentSet = 0,
 			currentBank = 0,
                         
-            power = true,
+            power = false,
 			bypass = false,
             
             screenDisplay = $('#screen');
@@ -44,25 +44,11 @@ $(function() {
 	
 	
 	
-		$('#power').on('click', function() {
-
-			power = !power;
-
-				if (power === true) {
-//					currentSet = 0;
-//					currentBank = 0;
-					$('#screen').children().show();
-					screenDisplay.css('backgroundColor', '#00FFFF');
-				} else {
-					$('#screen').children().hide();
-					screenDisplay.css('backgroundColor', '#009E9E');
-				}
-
-		});                       
+		$('#screen_title').hide();
+		             
 
 
 
-    
         $('#rack')        
         
                 .append(
@@ -152,6 +138,7 @@ $(function() {
 						
 						id: 'bypass',
 						image: 'img/toggle_sw_small.png',
+						title: 'bypass',
 						
 						left: 1060,
 						top: 30,
@@ -162,7 +149,22 @@ $(function() {
 				        clickable: true,
 						
 							click: (function() {
-								console.info('bypass');
+								
+								bypass = !bypass;
+								
+								if (bypass === true) {
+									wetGain.gain.value = 0;
+									
+									if (power === true) {
+										$('#screen_bypass').show();
+									}
+									
+								} else {
+									wetGain.gain.value = $('#wet').knob('value') / 100;
+									$('#screen_bypass').hide();
+								}
+								
+								//console.info('bypass');
 							})
                 
 					}),
@@ -170,7 +172,7 @@ $(function() {
 						$('<div />', {
 							id: 'bypass_label',
 							text: 'bypass'
-						})/*,
+						}),
 						
 						
 					
@@ -178,9 +180,10 @@ $(function() {
 						
 						id: 'power',
 						image: 'img/toggle_sw_small.png',
+						title: 'power',
 						
 						left: 1130,
-						top: 20,
+						top: 30,
 				
 						width: 32,
 						height: 20,
@@ -188,7 +191,24 @@ $(function() {
 				        clickable: true,
 						
 							click: (function() {
-								console.info('power');
+								
+								power = !power;
+
+								if (power === true) {
+									currentSet = 0;
+									currentBank = 0;
+									$('#screen_title, #power_led, #screen_bank, #screen_set').show();
+									if (bypass === true) {
+										$('#screen_bypass').show();
+									}
+									screenDisplay.css('backgroundColor', '#00FFFF');
+								} else {
+									$('#screen_title, #power_led, #screen_bank, #screen_set, #screen_bypass').hide();
+									screenDisplay.css('backgroundColor', '#009E9E');
+								}
+				
+								//console.info('power');
+								
 							})
                 
 					}),
@@ -197,31 +217,19 @@ $(function() {
 							id: 'power_label',
 							text: 'power'
 						})
-							*/	
+
 								
         );
  
         
-        
-                // on power on
 
-//            $('#screen_set').empty()
-//                    .append(
-//                        setList[currentSet]
-//                  );
-
-//            $('#screen_bank').empty()
-//                    .append(
-//                        reverbSet[setList[currentSet]][currentBank]
-//                  );
-
-
-
-        
+			
         
             $('#bank-arrow-left').on('click', function() {
-                
-                currentBank = (currentBank === 0) ? reverbSet[setList[currentSet]].length : currentBank;
+
+				if (power === true) {
+					
+					currentBank = (currentBank === 0) ? reverbSet[setList[currentSet]].length : currentBank;
                 
                     $('#screen_bank').empty()
                             .append(
@@ -229,14 +237,18 @@ $(function() {
                           );
                   
                   loadReverb(reverbSet, setList, currentSet, currentBank);
-                  
+				  
+				}
+				
             });
 
 
 
             $('#bank-arrow-right').on('click', function() {
 
-                currentBank = (currentBank === reverbSet[setList[currentSet]].length - 1) ? 0 : ++currentBank;
+				if (power === true) {
+					
+					currentBank = (currentBank === reverbSet[setList[currentSet]].length - 1) ? 0 : ++currentBank;
 
                     $('#screen_bank').empty()
                             .append(
@@ -244,7 +256,9 @@ $(function() {
                           );
                   
                   loadReverb(reverbSet, setList, currentSet, currentBank);
-                  
+				  
+				  }
+				  
             });
         
         
@@ -252,9 +266,11 @@ $(function() {
         
             $('#set_btn').on('click', function() {
 				
-                currentBank = 0;
-				
-                currentSet = (currentSet === Object.keys(reverbSet).length - 1) ? 0 : ++currentSet;               
+				if (power === true) {
+					
+					currentBank = 0;
+
+					currentSet = (currentSet === Object.keys(reverbSet).length - 1) ? 0 : ++currentSet;               
                
 			   
                     $('#screen_set').empty()
@@ -270,8 +286,10 @@ $(function() {
 
                   loadReverb(reverbSet, setList, currentSet, currentBank);
                 
+				}
+				
             });
-                   
+			
             
 });
 
