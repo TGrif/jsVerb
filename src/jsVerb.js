@@ -3,8 +3,6 @@
  *   digital reverb
  * 
  * https://github.com/TGrif/jsVerb
- * 
- * @requires jquery, jquery-ui, jqskin
  */
  
  
@@ -148,11 +146,12 @@ $(function() {
 						
 				        clickable: true,
 						
-							click: (function() {
+							click: (function() {	//TODO cut bypass marche mais pas l'inverse ?
 								
 								bypass = !bypass;
-								
+//								console.log(bypass)
 								if (bypass === true) {
+									
 									wetGain.gain.value = 0;
 									
 									if (power === true) {
@@ -161,10 +160,12 @@ $(function() {
 									
 								} else {
 									wetGain.gain.value = $('#wet').knob('value') / 100;
+//									console.log(wetGain.gain.value)
 									$('#screen_bypass').hide();
 								}
 								
-								//console.info('bypass');
+								console.info('bypass');
+								
 							})
                 
 					}),
@@ -207,7 +208,7 @@ $(function() {
 									screenDisplay.css('backgroundColor', '#009E9E');
 								}
 				
-								//console.info('power');
+								console.info('power');
 								
 							})
                 
@@ -225,53 +226,56 @@ $(function() {
 
 			
         
-            $('#bank-arrow-left').on('click', function() {
+            $('#bank-arrow-left, #bank-arrow-right').on('click', function() {
 
+				var idArrow = $(this).prop('id'),
+					currentSetListLenght = reverbSet[setList[currentSet]].length;
+				
 				if (power === true) {
 					
-					currentBank = (currentBank === 0) ? reverbSet[setList[currentSet]].length : currentBank;
-                
-                    $('#screen_bank').empty()
-                            .append(
-                                reverbSet[setList[currentSet]][--currentBank]
-                          );
-                  
-                  loadReverb(reverbSet, setList, currentSet, currentBank);
+					if (idArrow === 'bank-arrow-left') {
+
+						currentBank = (currentBank === 0) ? currentSetListLenght : currentBank;
+
+						$('#screen_bank').empty()
+								.append(
+									reverbSet[setList[currentSet]][--currentBank]
+							  );
+					  
+					} else if (idArrow === 'bank-arrow-right') {						
+					
+						currentBank = (currentBank === currentSetListLenght - 1) ? 0 : ++currentBank;
+
+						$('#screen_bank').empty()
+								.append(
+									reverbSet[setList[currentSet]][currentBank]
+							  );
 				  
+					}					
+					
+						$('#screen_set').empty()
+							.append(
+								setList[currentSet]
+						  );
+				  
+					  
+					  loadReverb(reverbSet, setList, currentSet, currentBank);
+					  
 				}
 				
             });
 
-
-
-            $('#bank-arrow-right').on('click', function() {
-
-				if (power === true) {
-					
-					currentBank = (currentBank === reverbSet[setList[currentSet]].length - 1) ? 0 : ++currentBank;
-
-                    $('#screen_bank').empty()
-                            .append(
-                                reverbSet[setList[currentSet]][currentBank]
-                          );
-                  
-                  loadReverb(reverbSet, setList, currentSet, currentBank);
-				  
-				  }
-				  
-            });
-        
-        
+	
         
         
             $('#set_btn').on('click', function() {
 				
 				if (power === true) {
 					
-					currentBank = 0;
-
-					currentSet = (currentSet === Object.keys(reverbSet).length - 1) ? 0 : ++currentSet;               
-               
+					var setLength = Object.keys(reverbSet).length;
+					
+					currentBank = 0,
+					currentSet = (currentSet === setLength - 1) ? 0 : ++currentSet;               
 			   
                     $('#screen_set').empty()
                             .append(
@@ -291,5 +295,5 @@ $(function() {
             });
 			
             
-});
+})
 

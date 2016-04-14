@@ -30,8 +30,8 @@
 
 
         
-        // based on cwilso @http://stackoverflow.com/questions/22525934
-        // and https://github.com/web-audio-components/simple-reverb
+        /* based on http://stackoverflow.com/questions/22525934 answer by Chris Wilson
+           and https://github.com/web-audio-components/simple-reverb */
 
     function computedReverb(duration, decay, reverse) {    
         
@@ -70,7 +70,8 @@
 
 
     function loadImpuseResponse(convolverNode, ir) {
-		//console.log('loading ir');
+		
+		console.info('loading ir');
 		
         try {
             
@@ -81,7 +82,7 @@
 
                 ajaxRequest.onload = function() {
 
-                  audioCtx.decodeAudioData(this.response, function(buffer) {
+                  audioCtx.decodeAudioData(this.response, function (buffer) {
                         convolverNode.buffer = buffer;
                     }, function(err) {
                         console.warn(err);
@@ -138,7 +139,7 @@
         console.info('starting sound...');
     
 
-    source.start(0);
+//    source.start(0);
 
 
 
