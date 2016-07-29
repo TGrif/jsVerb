@@ -153,10 +153,13 @@
 	cursor: pointer;
 }
 
+.arrow {
+     cursor: pointer;
+}
+
 /* TODO change color on click */
-.arrow:hover/*, #set_btn:hover*/ {
-    cursor: pointer;
-    background-color: lightgreen !important;    
+.arrow:active/*, #set_btn:hover*/ {   
+    background-color: lightgreen;    
 }
 
 #label {
@@ -168,13 +171,17 @@
 	font-size: 10px;
 }
 
-/*#label_studio {
+#dry, #wet {
+    cursor: pointer;
+}
+
+#label_studio {
 	position: absolute;
 	color: #FFFFFF;
 	margin-left: 77px;
     margin-top: 105px;
 	font-size: 10px;
-}*/
+}
 
 /*#jack_in {
     margin-left: 1064px;

@@ -28,7 +28,16 @@
             "echo",
             "spring"
           ],
-          
+        
+        "IMreverbs2": [
+            "In The Silo",
+            "Large Bottle Hall",
+            "Large Long Echo Hall",
+            "Large Wide Echo Hall",
+            "Masonic Lodge",
+            "Musikvereinsaal"
+          ],
+
         "computed": [
             "computed bank 1"
           ]

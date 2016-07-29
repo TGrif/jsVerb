@@ -231,8 +231,8 @@ $(function() {
 				var idArrow = $(this).prop('id'),
 					currentSetListLenght = reverbSet[setList[currentSet]].length;
 				
-				if (power === true) {
-					
+				if (power === true) {		
+
 					if (idArrow === 'bank-arrow-left') {
 
 						currentBank = (currentBank === 0) ? currentSetListLenght : currentBank;
