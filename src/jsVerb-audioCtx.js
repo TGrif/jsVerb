@@ -19,12 +19,12 @@
 			 	window.webkitAudioContext ||
 			 	window.mozAudioContext ||
 			 	window.oAudioContext ||
-			 	window.msAudioContext)
-			();
+			 	window.msAudioContext
+			)();
 
 
 		} catch (e) {
-			alert("AudioContext is not supported in your browser.");
+			alert("Web Audio is not supported by your browser...");
 			console.warn(e);
 		}
 
