@@ -1,3 +1,3 @@
-[submodule "lib/jqskin"]
-	path = lib/jqskin
+[submodule "demo/lib/jqskin"]
+	path = demo/lib/jqskin
 	url = https://github.com/aike/jqskin.git

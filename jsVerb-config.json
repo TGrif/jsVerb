@@ -1,48 +1,48 @@
  
 {
+  
+  "reverbSet": {
     
-    "reverbSet": {
-        
-        "room": [
-            "Home Studio",
-            "Tiny Bathroom",
-            "Large Church",
-            "Small Church"
-          ],
-           
-        "chamber": [
-            "Home Hallway",
-            "L-Shape Hall",
-            "Long Hallway"
-          ],
-           
-        "hall": [
-            "lyd3_000_ortf_48k",
-            "ir_row_3l_centre_mid",
-            "jazz_hall"
-          ],
-          
-        "fun": [
-            "telephone",
-            "muffler",
-            "echo",
-            "spring"
-          ],
-        
-        "IMreverbs2": [
-            "In The Silo",
-            "Large Bottle Hall",
-            "Large Long Echo Hall",
-            "Large Wide Echo Hall",
-            "Masonic Lodge",
-            "Musikvereinsaal"
-          ],
+    "room": [
+      "Home Studio",
+      "Tiny Bathroom",
+      "Large Church",
+      "Small Church"
+    ],
+       
+    "chamber": [
+      "Home Hallway",
+      "L-Shape Hall",
+      "Long Hallway"
+    ],
+       
+    "hall": [
+      "lyd3_000_ortf_48k",
+      "ir_row_3l_centre_mid",
+      "jazz_hall"
+    ],
+      
+    "fun": [
+      "telephone",
+      "muffler",
+      "echo",
+      "spring"
+    ],
+    
+    "IMreverbs2": [
+      "In The Silo",
+      "Large Bottle Hall",
+      "Large Long Echo Hall",
+      "Large Wide Echo Hall",
+      "Masonic Lodge",
+      "Musikvereinsaal"
+    ],
 
-        "computed": [
-            "computed bank 1"
-          ]
-        
-    }
+    "computed": [
+      "computed bank 1"
+    ]
     
+  }
+  
 }
 
