@@ -1,12 +1,15 @@
 /**
  * jsVerb
- *   digital reverb
- * 
+ *   JavaScript digital reverb
+ *
+ * @author TGrif 2015 - License MIT
  * https://github.com/TGrif/jsVerb
  */
 
+"use strict";
+
 var irDirectory = '../ir/';
-var irExtension = '.ogg';  // TODO function pour vérifier le format de l'audio et les codecs présents
+var irExtension = '.ogg';  // TODO function pour vérifier le format de l'audio et les codecs dispo
 
 var audioCtx = new (
         window.AudioContext
@@ -22,17 +25,18 @@ var source = audioCtx.createBufferSource();
 var dryGain = audioCtx.createGain();
 var wetGain = audioCtx.createGain();
 
+// var osc = audioCtx.createOscillator();
 var convolver = audioCtx.createConvolver();
 var analyser = audioCtx.createAnalyser();
   
   
-  dryGain.gain.value = 0.25;
-  wetGain.gain.value = 0.75;
+dryGain.gain.value = 0.25;
+wetGain.gain.value = 0.75;
   
   
-var setList = []
+var setList = [];
 
-var reverbSet = {}
+var reverbSet = {};
 
 $.getJSON('../jsVerb-config.json', function (config) {
   setList = Object.keys(config.reverbSet);
@@ -48,6 +52,10 @@ var currentBank = 0;
 var power = false;
 var bypass = false;
 
+
+var jsVerb = {
+  version: '2.0'
+}
 
 
 function getDryGain() {
@@ -71,15 +79,15 @@ function setWetGain(value) {
 }
 
 
-    /* based on http://stackoverflow.com/questions/22525934 answer by Chris Wilson
-       and https://github.com/web-audio-components/simple-reverb */
+  /* based on http://stackoverflow.com/questions/22525934 answer by Chris Wilson
+     and https://github.com/web-audio-components/simple-reverb */
 
 function computedReverb(duration, decay, reverse) {    
     
   var sampleRate = audioCtx.sampleRate;
   var length = audioCtx.sampleRate * duration;
   var nbChannel = 2;
-      
+  
   var impulse = audioCtx.createBuffer(nbChannel, length, sampleRate);
   var impulseL = impulse.getChannelData(0);
   var impulseR = impulse.getChannelData(1);
@@ -95,26 +103,34 @@ function computedReverb(duration, decay, reverse) {
 }
 
 
+// TODO document params
 function loadReverb(reverbSet, setList, currentSet, currentBank) {
-
   if (setList[currentSet] !== 'computed') {  // ir reverb
-    loadImpuseResponse(
-	    convolver,
-      irDirectory + setList[currentSet] + '/' + reverbSet[setList[currentSet]][currentBank] + irExtension
-    );
-  } else {  // computed reverb
+    var irFile = irDirectory + setList[currentSet] + '/' + reverbSet[setList[currentSet]][currentBank] + irExtension
+    $.get(irFile).done(function() { 
+      loadImpuseResponse(
+        convolver,
+        irFile
+      );
+    }).fail(function() {   // TODO trouver mieux pour charger des ir en .wav
+      loadImpuseResponse(
+        convolver,
+        irDirectory + setList[currentSet] + '/' + reverbSet[setList[currentSet]][currentBank] + '.wav'
+      );
+    })
+  } else {  // computed reverb (duration, decay, reverse)
     convolver.buffer = computedReverb(2, 2, false);
   }
-
 }
 
 
+//  ir/telephone.wav
 function loadImpuseResponse(convolverNode, ir) {
 
   console.info('loading ir');
 
   try {
-      
+    
     var ajaxRequest = new XMLHttpRequest();
 
     ajaxRequest.open('GET', ir, true);
@@ -139,28 +155,27 @@ function loadImpuseResponse(convolverNode, ir) {
 }
 
 
+ // TODO externaliser le loader audio
+  var request = new XMLHttpRequest();
 
-  var 
-
-      request = new XMLHttpRequest(),
-
-      sampleSound = '../audio/sample.ogg';
+  var sampleSound = '../audio/sample.ogg';
 
 
-      request.open("GET", sampleSound, true);
-      request.responseType = 'arraybuffer';
+  request.open("GET", sampleSound, true);
+  request.responseType = 'arraybuffer';
 
-      request.onload = function() {
-        audioCtx.decodeAudioData(request.response, function(buff) {
-          source.buffer = buff;
-        }, function (err) {
-          console.warn(err);
-        });
-      };  
+  request.onload = function() {
+    audioCtx.decodeAudioData(request.response, function (buff) {
+      source.buffer = buff;
+    }, function (err) {
+      console.warn(err);
+    });
+  };
 
-      request.send();
+  request.send();
 
 
+  
   
     source.connect(analyser);
   
@@ -178,6 +193,5 @@ function loadImpuseResponse(convolverNode, ir) {
     console.info('starting sound...');
     
 
-   // source.start(0);
-
+   source.start(0);
 

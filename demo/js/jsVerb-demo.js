@@ -1,8 +1,10 @@
 /**
  * jsVerb
  *   digital reverb
- * 
+ *
+* @author TGrif 2015 - License MIT
  * https://github.com/TGrif/jsVerb
+ * @requires jquery, jquery-ui, jqskin
  */
  
 "use strict";
@@ -185,7 +187,7 @@ $(function() {
           if (bypass === true) {
             $('#screen_bypass').show();
           }
-          screenDisplay.css('backgroundColor', '#00FFFF');
+          screenDisplay.css('backgroundColor', '#00FFFF'); //cyan
           
         } else {
           
@@ -205,6 +207,17 @@ $(function() {
       text: 'power'
     })
 
+    
+//                    $('<img />', {
+//                        id: 'jack_in',
+//                        src: 'img/jack.png'
+//                    }),
+//
+//                            
+//                    $('<img />', {
+//                        id: 'jack_out',
+//                        src: 'img/jack.png'
+//                    })
 
   );
  

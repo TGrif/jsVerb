@@ -19,7 +19,8 @@
     "hall": [
       "lyd3_000_ortf_48k",
       "ir_row_3l_centre_mid",
-      "jazz_hall"
+      "jazz_hall",
+      "large"
     ],
       
     "fun": [
@@ -27,6 +28,41 @@
       "muffler",
       "echo",
       "spring"
+    ],
+    
+    "IMreverbs": [
+      "Block Inside",
+      "Bottle Hall",
+      "Cement Blocks 1",
+      "Cement Blocks 2",
+      "Chateau de Logne, Outside",
+      "Conic Long Echo Hall",
+      "Deep Space",
+      "Derlon Sanctuary",
+      "Direct Cabinet N1",
+      "Direct Cabinet N2",
+      "Direct Cabinet N3",
+      "Direct Cabinet N4",
+      "Five Columns Long",
+      "Five Columns",
+      "French 18th Century Salon",
+      "Going Home",
+      "Greek 7 Echo Hall",
+      "Highly Damped Large Room",
+      "In The Silo Revised",
+      "Narrow Bumpy Space",
+      "Nice Drum Room",
+      "On a Star",
+      "Parking Garage",
+      "Rays",
+      "Right Glass Triangle",
+      "Ruby Room",
+      "Scala Milan Opera Hall",
+      "Small Drum Room",
+      "Small Prehistoric Cave",
+      "St Nicolaes Church",
+      "Trig Room",
+      "Vocal Duo"
     ],
     
     "IMreverbs2": [
@@ -38,6 +74,36 @@
       "Musikvereinsaal"
     ],
 
+    "CKSDE_Reverbs2": [
+      "DRUM NICE BOOTH 1",
+      "DRUM PLACE 1",
+      "DUBWISE 4",
+      "DUCK DELAY 1",
+      "ECHO D FUSOR 1",
+      "ECHOVERB MID 1",
+      "HALL DELAYED 1",
+      "HALL ECHOED 1",
+      "KICK BOOSTER SPACE 1",
+      "L'IL DRUM SPACE 1",
+      "LARGE PLATE 1",
+      "LINO ROOM 1",
+      "MEDIUMPHAT 1",
+      "NICE HALL 1",
+      "NICE MIDDLE ROOM 1",
+      "NICE SMALL HALL 1",
+      "NICE SMALL ROOM 1",
+      "OUTDOOR SMALL CHAPITEAUX 1",
+      "PERFECT DRUM BOOTH 1",
+      "PING ET PONG 250 1",
+      "STEREO REFLECT 2",
+      "VERY SMALL PLATE 1",
+      "VOCAL PLATE 1",
+      "VOCAL PLATE 2",
+      "VOX PLATE 1",
+      "WOODEN HALL 1",
+      "WOODEN HALL 2"
+    ],
+    
     "computed": [
       "computed bank 1"
     ]
