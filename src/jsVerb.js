@@ -8,190 +8,221 @@
 
 "use strict";
 
-var irDirectory = '../ir/';
-var irExtension = '.ogg';  // TODO function pour vérifier le format de l'audio et les codecs dispo
 
-var audioCtx = new (
-        window.AudioContext
-        || window.webkitAudioContext
-        || window.mozAudioContext
-        || window.oAudioContext
-        || window.msAudioContext
-    )() || console.warn('Audio Context not supported...');
-
-
-var source = audioCtx.createBufferSource();
-
-var dryGain = audioCtx.createGain();
-var wetGain = audioCtx.createGain();
-
-// var osc = audioCtx.createOscillator();
-var convolver = audioCtx.createConvolver();
-var analyser = audioCtx.createAnalyser();
+class jsVerb {
   
-  
-dryGain.gain.value = 0.25;
-wetGain.gain.value = 0.75;
-  
-  
-var setList = [];
-
-var reverbSet = {};
-
-$.getJSON('../jsVerb-config.json', function (config) {
-  setList = Object.keys(config.reverbSet);
-  $.each(config.reverbSet, function (set, bank) {
-    reverbSet[set] = bank;
-  });
-});
-
-
-var currentSet = 0;
-var currentBank = 0;
-
-var power = false;
-var bypass = false;
-
-
-var jsVerb = {
-  version: '2.0'
-}
-
-
-function getDryGain() {
-  // console.log('getting dry gain', dryGain.gain.value)
-  return dryGain.gain.value;
-}
-
-function setDryGain(value) {
-  // console.log('setting dry gain', dryGain.gain.value)
-  dryGain.gain.value = value;
-}
-
-function getWetGain() {
-  // console.log('getting wet gain', wetGain.gain.value)
-  return wetGain.gain.value;
-}
-
-function setWetGain(value) {
-  // console.log('setting wet gain', wetGain.gain.value)
-  wetGain.gain.value = value;
-}
-
-
-  /* based on http://stackoverflow.com/questions/22525934 answer by Chris Wilson
-     and https://github.com/web-audio-components/simple-reverb */
-
-function computedReverb(duration, decay, reverse) {    
+  constructor (audioCtx) {
     
-  var sampleRate = audioCtx.sampleRate;
-  var length = audioCtx.sampleRate * duration;
-  var nbChannel = 2;
-  
-  var impulse = audioCtx.createBuffer(nbChannel, length, sampleRate);
-  var impulseL = impulse.getChannelData(0);
-  var impulseR = impulse.getChannelData(1);
-
-  for (var i = 0; i < length; i++) {
-    var n = reverse ? length - i : i;
-    impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
-    impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
-  }
-
-  return impulse;
-
-}
-
-
-// TODO document params
-function loadReverb(reverbSet, setList, currentSet, currentBank) {
-  if (setList[currentSet] !== 'computed') {  // ir reverb
-    var irFile = irDirectory + setList[currentSet] + '/' + reverbSet[setList[currentSet]][currentBank] + irExtension
-    $.get(irFile).done(function() { 
-      loadImpuseResponse(
-        convolver,
-        irFile
-      );
-    }).fail(function() {   // TODO trouver mieux pour charger des ir en .wav
-      loadImpuseResponse(
-        convolver,
-        irDirectory + setList[currentSet] + '/' + reverbSet[setList[currentSet]][currentBank] + '.wav'
-      );
-    })
-  } else {  // computed reverb (duration, decay, reverse)
-    convolver.buffer = computedReverb(2, 2, false);
-  }
-}
-
-
-//  ir/telephone.wav
-function loadImpuseResponse(convolverNode, ir) {
-
-  console.info('loading ir');
-
-  try {
+    this.audioCtx = audioCtx;
     
-    var ajaxRequest = new XMLHttpRequest();
+    this.irDirectory = '../ir/';
+    this.irExtension = '.ogg';
+    
+    this.getIrConfig();
+    
+    
+    this.dryGain = audioCtx.createGain();
+    this.dryGain.gain.value = 0.25;
+    
+    this.wetGain = audioCtx.createGain();
+    this.wetGain.gain.value = 0.75;
 
-    ajaxRequest.open('GET', ir, true);
-    ajaxRequest.responseType = 'arraybuffer';
+    this.convolver = audioCtx.createConvolver();
+    
+    this.analyser = audioCtx.createAnalyser();
+    
+    
+    this.sampleRate = audioCtx.sampleRate;
+    this.nbChannel = 2;
+    this.nbChannelDispo = audioCtx.destination.channelCount;
+    
+    
+    this.setList = [];
+    this.reverbSet = {};
+    
+    this.currentSet = 0;
+    this.currentBank = 0;
+    
+    this.power = false;
+    this.bypass = false;
+    
+  }
+  
+  
+  getIrConfig() {
+    fetch("../src/ir.json")
+      .then(response => response.json())
+      .then(config => {
+        this.setList = Object.keys(config.reverbSet);
+        this.reverbSet = config.reverbSet;
+      }, err => console.error);
+  }
+  
+  getCurrentSetLength() {
+    return this.reverbSet[this.setList[this.currentSet]].length;
+  }
+  
+  getCurrentBank() {
+    return this.reverbSet[this.setList[this.currentSet]][this.currentBank];
+  }
+  
+  getDryGain() {
+    return Math.round(this.dryGain.gain.value * 100);
+  }
+  
+  setDryGain(value) {
+    this.dryGain.gain.value = value / 100;
+  }
+  
+  getWetGain() {
+    return Math.round(this.wetGain.gain.value * 100);
+  }
+  
+  setWetGain(value) {
+    this.wetGain.gain.value = value / 100;
+  }
+  
+  powerOnOff() {
+    this.power = !this.power;
+    if (this.power) this.loadReverb();
+  }
+  
+  isPowered() {
+    return this.power;
+  }
+  
+  bypassOnOff() {
+    this.bypass = !this.bypass;
+    if (!this.bypass) this.wetGain.gain.value = 0;
+  }
+  
+  isBypassed() {
+    return this.bypass;
+  }
+  
+  preset() {  // TODO
+    if (!window.localStorage)
+      return console.error('Sorry, preset not supported.');
+    let userPreset = window.localStorage.getItem('jsVerb');
+    console.log('Soon.', userPreset);
+  }
+  
+  loadSet() {
+    if (!this.power) return;
+    this.currentBank = 0;
+    if (this.setList.length - 1 == this.currentSet) {
+      this.currentSet = 0;
+    } else {
+      this.setList[++this.currentSet];
+    }
+    this.loadReverb();
+    console.info('jsVerb loading set:', this.setList[this.currentSet]);
+  }
+  
+  getCurrentSet() {
+    if (!this.power) return;
+    return this.setList[this.currentSet];
+  }
+  
+  nextBank() {
+    if (!this.power) return;
+    if (this.getCurrentSetLength() === 1) return;
+    if (this.currentBank === this.getCurrentSetLength() - 1) {
+      this.currentBank = 0;
+    } else {
+      ++this.currentBank;
+    }
+    this.loadReverb();
+    console.info('jsVerb loading next bank:', this.getCurrentBank())
+  }
+  
+  previousBank() {
+    if (!this.power) return;
+    if (this.getCurrentSetLength() === 1) return;
+    if (this.currentBank === 0) {
+      this.currentBank = this.getCurrentSetLength() - 1;
+    } else {
+      --this.currentBank;
+    }
+    this.loadReverb();
+    console.info('jsVerb loading previous bank:', this.getCurrentBank())
+  }
+  
+  computedReverb(duration, decay, reverse) {  // https://stackoverflow.com/a/22538980/5156280
+    
+    var length = this.sampleRate * duration;
+    
+    var impulse = this.audioCtx.createBuffer(this.nbChannel, length, this.sampleRate);
+    
+    var impulseL = impulse.getChannelData(0);
+    var impulseR = impulse.getChannelData(1);
 
-    ajaxRequest.onload = function() {
+    for (var i = 0; i < length; i++) {
+      var n = reverse ? length - i : i;
+      impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
+      impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
+    }
 
-      audioCtx.decodeAudioData(this.response, function (buffer) {
-        convolverNode.buffer = buffer;
-      }, function (err) {
-        console.warn(err);
-      });
-
-    };
-
-    ajaxRequest.send();
-
-  } catch (e) {
-    console.warn(e);
+    return impulse;
   }
 
-}
-
-
- // TODO externaliser le loader audio
-  var request = new XMLHttpRequest();
-
-  var sampleSound = '../audio/sample.ogg';
-
-
-  request.open("GET", sampleSound, true);
-  request.responseType = 'arraybuffer';
-
-  request.onload = function() {
-    audioCtx.decodeAudioData(request.response, function (buff) {
-      source.buffer = buff;
-    }, function (err) {
-      console.warn(err);
+  loadImpuseResponse(file) {
+    try {
+      this.convolver.buffer = this.loadSound(this.convolver, file);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  
+  loadReverb() {
+    if (!this.power) return;
+    
+    var currentSet = this.getCurrentSet();
+    
+      /* convolution reverb */
+    if (currentSet !== 'computed') {
+      
+      var irFile = this.irDirectory + currentSet + '/' + this.getCurrentBank()
+      
+      fetch(irFile + '.ogg').then(response => {
+        if (response.ok) {
+          this.loadImpuseResponse(irFile + this.irExtension);
+        } else {  // TODO best support for other formats
+          fetch(irFile + '.wav').then(response => {
+            this.loadImpuseResponse(irFile + '.wav');
+          }, err => console.error);
+        }
+      }, err => console.error);
+      
+      /* computed reverb */
+    } else {
+      this.convolver.buffer = this.computedReverb(2, 2, false);
+    }
+    
+  }
+  
+  loadSound(dest, file) {
+    fetch(file)
+      .then(response => response.arrayBuffer())
+      .then(buffer => {
+        this.audioCtx.decodeAudioData(buffer, data => {
+          dest.buffer = data;
+        }, err => console.error);
     });
-  };
-
-  request.send();
-
-
+  }
   
+  plug(source, destination) {
+    
+    source.connect(this.convolver);
+    
+    source.connect(this.analyser);
+    
+    source.connect(this.dryGain);
+    this.convolver.connect(this.wetGain);
+    
+    this.wetGain.connect(destination);
+    this.dryGain.connect(destination);
+    
+  }
   
-    source.connect(analyser);
-  
-    source.connect(convolver);
-    source.connect(dryGain);
-    
-    convolver.connect(wetGain);
-    
-    wetGain.connect(audioCtx.destination);
-    dryGain.connect(audioCtx.destination);
-
-    source.connect(audioCtx.destination);
-        
-   
-    console.info('starting sound...');
-    
-
-   source.start(0);
-
+}
