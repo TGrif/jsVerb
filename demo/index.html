@@ -5,7 +5,12 @@
     
     <title>jsVerb</title>
     
-      <link rel="stylesheet" type="text/css" href="style/main.css" media="all" />
+      <link rel="shortcut icon" href="favicon.ico" />
+    
+      <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+      <link rel="stylesheet" type="text/css" href="style/jsVerb-demo.css" media="all" />
+      <link rel="stylesheet" type="text/css" href="style/simple-audio-player.css" media="all" />
 
       <script src="lib/jquery/jquery-1.11.3.min.js"></script>
       <script src="lib/jquery/jquery-ui-1.11.4.min.js"></script>
@@ -14,6 +19,7 @@
       <script src="lib/jqskin/jqskin.switch.js"></script>
 
       <script src="../src/jsVerb.js"></script>
+      <script src="js/simple-audio-player.js"></script>
       <script src="js/jsVerb-demo.js"></script>
 
   </head>
@@ -33,11 +39,15 @@
       </div>
 
       <div id="power_led" title="power on"></div>
-      <!-- <div id="bypass_led" title="bypass active"></div> -->
+      <div id="bypass_led" title="bypass active"></div>
 
-      <div id="label_studio">jsVerb</div>
+      <div id="label_studio" class="label">jsVerb</div>
       <div id="label">stereo reverb processor</div>
+      
     </div>
+
+    
+    <div class="simple-audio-player" style="position: absolute; margin-top: 88px; margin-left: 1340px;"></div>
 
 
     <a href="https://github.com/TGrif/jsVerb" target="_blank">

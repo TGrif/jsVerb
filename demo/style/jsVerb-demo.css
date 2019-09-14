@@ -1,0 +1,229 @@
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+#label_studio {
+  font-weight: bold;
+}
+
+.label {
+  position: absolute;
+  color: white;
+}
+
+#rack {
+  position: absolute;
+  width: 1180px;
+  height: 150px;
+  background-color: black;
+  font-size: 13px;
+}
+
+#bypass_label {
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: 1036px;
+}
+
+/* #bypass {  TODO
+  left: 1060px;
+  top: 30px;
+  width: 32px;
+  height: 20px;
+} */
+
+#power_led {
+	float: right;
+	width: 18px;
+  height: 18px;
+  margin-right: 20px;
+  margin-top: 110px;
+  background-color: #293133;
+  /* display: none; /* TODO border 1px grey when off */ */
+}
+
+#power_label {
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: 1105px;
+}
+
+#screen {
+  position: absolute;
+  width: 440px;
+  height: 60px;
+  top: 33px;
+  left: 50px;
+  background-color: #009E9E;
+  border-radius: 2px;
+}
+
+#screen_bank {
+  float: right;
+  margin-right: 30px;
+	margin-top: 20px;
+  max-width: 120px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+#screen_set {
+  float: left;
+  margin-left: 150px;
+  margin-top: 20px;
+  text-transform: uppercase;
+}
+
+#screen_bypass {
+  position: absolute;
+  padding: 1px;
+  /* margin-left: 1002px; */
+  margin-left: 12px;
+  margin-top: 35px;
+  color: tomato;
+  font-size: 10px;
+  font-weight: bold;
+  display: none;
+}
+
+#bank-label {
+  top: 35px;
+  left: 653px;
+}
+
+#set_label {
+  top: 35px;
+  left: 570px;
+}
+
+#wet_label {
+  margin-left: 778px;
+  margin-top: 35px;
+}
+
+#wet_gain {
+  position: absolute;
+  display: none;
+  color: lightgreen;
+  margin-left: 820px;
+  margin-top: 106px;
+  font-size: 10px;
+}
+
+#dry_label {
+  margin-left: 869px;
+  margin-top: 35px;
+}
+
+#dry_gain {
+  position: absolute;
+  display: none;
+  color: lightgreen;
+  margin-left: 910px;
+  margin-top: 106px;
+  font-size: 10px;
+}
+
+#bank-arrow-left {
+  position: absolute;
+  width: 35px;
+  margin-left: 637px;
+  margin-top: 58px;
+}
+
+#bank-arrow-right {
+  position: absolute;
+  width: 35px;
+  margin-left: 664px;
+  margin-top: 58px;
+}
+
+.arrow {
+  background-color: white;
+}
+
+.arrow:active/*, #set_btn:hover*/ {
+  background-color: lightgreen;
+}
+
+#set_btn {
+  margin-left: 566px;
+  margin-top: 62px;
+  position: absolute;
+  width: 28px;
+}
+
+#label {
+  position: absolute;
+  color: #FFF;
+  margin-left: 339px;
+  margin-top: 105px;
+  font-style: italic;
+  font-size: 10px;
+}
+
+#label_studio {
+  margin-left: 295px;
+  margin-top: 105px;
+  font-size: 10px;
+}
+
+#preset_btn {
+  margin-left: 75px;
+  margin-top: 120px;
+  position: absolute;
+  height: 9px;
+}
+
+#preset_label {
+  position: absolute;
+  font-style: italic;
+  margin-left: 76px;
+  margin-top: 106px;
+  font-size: 9px;
+  color: white;
+}
+
+/* #reverse_btn {
+  margin-left: 106px;
+  margin-top: 120px;
+  position: absolute;
+  height: 9px;
+  cursor: pointer;
+}
+
+#reverse_label {
+  position: absolute;
+  font-style: italic;
+  margin-left: 107px;
+  margin-top: 106px;
+  font-size: 9px;
+  color: white;
+} */
+
+#status_btn {
+  margin-left: 106px;
+  margin-top: 120px;
+  position: absolute;
+  height: 9px;
+  /* cursor: pointer; */
+}
+
+#status_label {
+  position: absolute;
+  font-style: italic;
+  margin-left: 107px;
+  margin-top: 106px;
+  font-size: 9px;
+  color: white;
+}
+
+#github_ribbon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+}

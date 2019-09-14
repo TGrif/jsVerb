@@ -6,8 +6,6 @@
  * https://github.com/TGrif/jsVerb
  */
 
-"use strict";
-
 
 class jsVerb {
   
@@ -26,7 +24,7 @@ class jsVerb {
     
     this.wetGain = audioCtx.createGain();
     this.wetGain.gain.value = 0.75;
-
+    
     this.convolver = audioCtx.createConvolver();
     
     this.analyser = audioCtx.createAnalyser();
@@ -43,14 +41,18 @@ class jsVerb {
     this.currentSet = 0;
     this.currentBank = 0;
     
+    this.computedReverse = false;
+    
     this.power = false;
     this.bypass = false;
+    
+    this.destination = audioCtx.destination;
     
   }
   
   
   getIrConfig() {
-    fetch("../src/ir.json")
+    fetch(this.irDirectory + 'ir.json')
       .then(response => response.json())
       .then(config => {
         this.setList = Object.keys(config.reverbSet);
@@ -58,12 +60,22 @@ class jsVerb {
       }, err => console.error);
   }
   
+  getCurrentSet() {
+    if (!this.power) return;
+    return this.setList[this.currentSet];
+  }
+  
+  getSetLength() {
+    return this.setList.length;
+  }
+  
   getCurrentSetLength() {
-    return this.reverbSet[this.setList[this.currentSet]].length;
+    return this.reverbSet[this.getCurrentSet()].length;
   }
   
   getCurrentBank() {
-    return this.reverbSet[this.setList[this.currentSet]][this.currentBank];
+    if (!this.power) return;
+    return this.reverbSet[this.getCurrentSet()][this.currentBank];
   }
   
   getDryGain() {
@@ -92,19 +104,44 @@ class jsVerb {
   }
   
   bypassOnOff() {
+    if (!this.power) return;
     this.bypass = !this.bypass;
-    if (!this.bypass) this.wetGain.gain.value = 0;
+    if (this.bypass) {
+      this.wetGain.disconnect();
+    } else {
+      this.wetGain.connect(this.destination);
+    }
   }
   
   isBypassed() {
     return this.bypass;
   }
   
-  preset() {  // TODO
+  preset() {  // TODO long press to save...
+    if (!this.power) return;
     if (!window.localStorage)
       return console.error('Sorry, preset not supported.');
-    let userPreset = window.localStorage.getItem('jsVerb');
-    console.log('Soon.', userPreset);
+    var userPreset = window.localStorage.getItem('jsVerb');
+    console.log('jsVerb - Loading userPreset:', userPreset);
+  }
+  
+  isReversed() {
+    return this.computedReverse;
+  }
+  
+  reverse() {
+    if (!this.power) return;
+    this.computedReverse = !this.computedReverse;
+    console.log('jsVerb - Reversed computed reverb:', this.computedReverse);
+  }
+  
+  status() {  // TODO
+    if (!this.power) return;
+    var status = {
+      set: this.getSetLength(),
+      reversed: this.isReversed()
+    }
+    console.log('jsVerb - Status: ', status)
   }
   
   loadSet() {
@@ -116,12 +153,7 @@ class jsVerb {
       this.setList[++this.currentSet];
     }
     this.loadReverb();
-    console.info('jsVerb loading set:', this.setList[this.currentSet]);
-  }
-  
-  getCurrentSet() {
-    if (!this.power) return;
-    return this.setList[this.currentSet];
+    console.info('jsVerb - Loading set:', this.getCurrentSet());
   }
   
   nextBank() {
@@ -133,7 +165,7 @@ class jsVerb {
       ++this.currentBank;
     }
     this.loadReverb();
-    console.info('jsVerb loading next bank:', this.getCurrentBank())
+    console.info('jsVerb - Loading next bank:', this.getCurrentBank())
   }
   
   previousBank() {
@@ -145,10 +177,10 @@ class jsVerb {
       --this.currentBank;
     }
     this.loadReverb();
-    console.info('jsVerb loading previous bank:', this.getCurrentBank())
+    console.info('jsVerb - Loading previous bank:', this.getCurrentBank())
   }
   
-  computedReverb(duration, decay, reverse) {  // https://stackoverflow.com/a/22538980/5156280
+  computedReverb(duration, decay) {  // https://stackoverflow.com/a/22538980/5156280
     
     var length = this.sampleRate * duration;
     
@@ -158,7 +190,7 @@ class jsVerb {
     var impulseR = impulse.getChannelData(1);
 
     for (var i = 0; i < length; i++) {
-      var n = reverse ? length - i : i;
+      var n = this.computedReverse ? length - i : i;  // TODO pas de diff sonore sur le reversed
       impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
       impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
     }
@@ -182,7 +214,7 @@ class jsVerb {
       /* convolution reverb */
     if (currentSet !== 'computed') {
       
-      var irFile = this.irDirectory + currentSet + '/' + this.getCurrentBank()
+      var irFile = this.irDirectory + currentSet + '/' + this.getCurrentBank();
       
       fetch(irFile + '.ogg').then(response => {
         if (response.ok) {
@@ -196,7 +228,7 @@ class jsVerb {
       
       /* computed reverb */
     } else {
-      this.convolver.buffer = this.computedReverb(2, 2, false);
+      this.convolver.buffer = this.computedReverb(2, 2);
     }
     
   }
@@ -213,15 +245,16 @@ class jsVerb {
   
   plug(source, destination) {
     
+    destination = destination || this.destination;
+    
     source.connect(this.convolver);
-    
     source.connect(this.analyser);
-    
     source.connect(this.dryGain);
+    
     this.convolver.connect(this.wetGain);
     
-    this.wetGain.connect(destination);
     this.dryGain.connect(destination);
+    this.wetGain.connect(destination);
     
   }
   

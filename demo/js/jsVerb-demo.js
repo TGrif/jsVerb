@@ -1,35 +1,31 @@
 /**
- * jsVerb
- *   digital reverb
+ * jsVerb demo
  *
-* @author TGrif 2015 - License MIT
- * https://github.com/TGrif/jsVerb
- * @requires jquery, jquery-ui, jqskin
+ * @author TGrif 2015 - License MIT
+ * https://github.com/TGrif/jsVerb/demo
  */
- 
-"use strict";
  
 $(function() {
 
-  var screenDisplay = $('#screen');
+  var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  var destination = audioCtx.destination;
+  
+  var reverb = new jsVerb(audioCtx);
+  var player = new SimpleAudioPlayer(audioCtx);
+  
+  reverb.plug(player.output(), destination)
 
 
-  // $.getJSON('../jsVerb-config.json', function (config) {
-  //   setList = Object.keys(config.reverbSet);
-  //   $.each(config.reverbSet, function (set, bank) {
-  //     reverbSet[set] = bank;
-  //   });
-  // });
-
-
-
-  $('#screen_title').hide();
 
 
   $('#rack').append(
-
+    
+    
+      /* set */
+    
     $('<div>', {
       id: 'set_label',
+      class: 'label',
       text: 'set'
     }),
     
@@ -39,8 +35,11 @@ $(function() {
     }),
     
     
+      /* bank */
+    
     $('<div>', {
     	id: 'bank-label',
+      class: 'label',
     	text: 'bank'
     }),
 
@@ -56,119 +55,122 @@ $(function() {
     	class: 'arrow'
     }),
     
-
+    
+     /* preset */
+    
+    $('<img>', {
+      id: 'preset_btn',
+      src: 'img/preset_button.png',
+      // title: 'Load user preset'
+    }),
+    
+    $('<div>', {
+      id: 'preset_label',
+      text: 'usr'
+    }),
+    
+    
+    /* reverse */
+   
+    // $('<img>', {
+    //   id: 'reverse_btn',
+    //   src: 'img/preset_button.png',
+    //   // title: 'Reverse computed reverb'
+    // }),
+    // 
+    // $('<div>', {
+    //   id: 'reverse_label',
+    //   text: 'rev'
+    // }),
+    
+    
+    /* infos */
+   
+    $('<img>', {
+      id: 'status_btn',
+      src: 'img/preset_button.png',
+      title: 'Status'
+    }),
+    
+    $('<div>', {
+      id: 'status_label',
+      text: 'nfo'
+    }),
+   
+    
+      /* dry */
+    
+    $('<div>', {
+      id: 'dry_label',
+      class: 'label',
+      text: 'dry'
+    }),
+    
     $('<img>').knob({
 
       id: 'dry',
-      image: 'img/knob_silver_big_mid.png',
-
-      left: 760,
-      top: 60,
-      width: 60,
-      height: 60,
-      
-      // value: dryGain.gain.value,
-      value: getDryGain(),
-      
-      change: function() {
-        console.log(getDryGain())
-        // dryGain.gain.value = $(this).knob('value') / 100;
-        var dryGain = $(this).knob('value') / 100;
-        setDryGain(dryGain)
-      }
-
-    }),
-
-    $('<div>', {
-    	id: 'dry_knob_label',
-    	text: 'dry'
-    }),
-
-
-    $('<img />').knob({
-
-      id: 'wet',
-      image: 'img/knob_silver_big_mid.png',
+      image: './lib/jqskin/img/knob_silver_big_mid.png',
 
       left: 850,
       top: 60,
       width: 60,
       height: 60,
       
-      // value: wetGain.gain.value,
-      value: getWetGain(),
+      value: reverb.getDryGain(),
       
       change: function() {
-        console.log(getWetGain())
-        // console.log(wetGain.gain.value)
-        // wetGain.gain.value = $(this).knob('value') / 100;
-        var wetGain = $(this).knob('value') / 100;
-        setWetGain(wetGain)
+        var dryGain = $(this).knob('value');
+        reverb.setDryGain(dryGain)
+        $('#dry_gain').text(reverb.getDryGain() + '%');
       }
 
     }),
-
+    
+    
+      /* wet */
+    
     $('<div>', {
-      id: 'wet_knob_label',
+      id: 'wet_label',
+      class: 'label',
       text: 'wet'
     }),
+    
+    $('<img>').knob({
 
+      id: 'wet',
+      image: './lib/jqskin/img/knob_silver_big_mid.png',
 
-    $('<img>').switch({
-    	
-    	id: 'bypass',
-    	image: 'img/toggle_sw_small.png',
-    	title: 'bypass',
-    	
-    	left: 1060,
-    	top: 40,
-
-    	width: 32,
-    	height: 20,
-
-      clickable: true,
-
-      click: function() {	//TODO cut bypass marche mais pas l'inverse ?
-
-        bypass = !bypass;
-        //  console.log(bypass)
-        if (bypass) {
-
-          // wetGain.gain.value = 0;
-          setWetGain(0);
-
-          if (power) $('#screen_bypass').show();
-
-        } else {
-          var wetGain = $('#wet').knob('value') / 100;
-          setWetGain(wetGain);
-        	// wetGain.gain.value = $('#wet').knob('value') / 100;
-        //  console.log(wetGain.gain.value)
-          $('#screen_bypass').hide();
-        }
-
-        console.info('bypass');
-
+      left: 760,
+      top: 60,
+      width: 60,
+      height: 60,
+      
+      value: reverb.getWetGain(),
+      
+      change: function() {
+        var wetGain = $(this).knob('value');
+        reverb.setWetGain(wetGain)
+        $('#wet_gain').text(reverb.getWetGain() + '%')
       }
 
     }),
-
+    
+    /* power */
+    
     $('<div>', {
-      id: 'bypass_label',
-      text: 'bypass'
+      id: 'power_label',
+      class: 'label',
+      text: 'power'
     }),
-
-
-
+    
     $('<img>').switch({
 
       id: 'power',
-      image: 'img/toggle_sw_small.png',
+      image: './lib/jqskin/img/toggle_sw_small.png',
       title: 'power',
 
-      left: 1130,
+      left: 1115,
       top: 30,
-
       width: 32,
       height: 20,
 
@@ -176,118 +178,130 @@ $(function() {
 
       click: function() {
 
-        power = !power;
+        reverb.powerOnOff();
 
-        if (power) {
-
-          currentSet = 0;   // TODO function reinit()
-          currentBank = 0;
-
-          $('#screen_title, #power_led, #screen_bank, #screen_set').show();
-          if (bypass === true) {
-            $('#screen_bypass').show();
-          }
-          screenDisplay.css('backgroundColor', '#00FFFF'); //cyan
+        if (reverb.isPowered()) {
+          
+          $('#screen_set').empty()
+            .append(reverb.getCurrentSet());
+            
+          $('#screen_bank').empty()
+            .append(reverb.getCurrentBank());
+              
+          // TODO remplacer par une ou plusieurs class
+          $('#screen_bank, #screen_set, #dry_gain, #wet_gain').show(); // #screen_title, 
+          if (reverb.bypass) $('#screen_bypass').show();
+          $('#power_led').css('backgroundColor', 'blue');
+          $('#screen').css('backgroundColor', '#00FFFF'); //cyan
           
         } else {
           
-          $('#screen_title, #power_led, #screen_bank, #screen_set, #screen_bypass').hide();
-          screenDisplay.css('backgroundColor', '#009E9E');
+          $('#screen_bank, #screen_set, #dry_gain, #wet_gain').hide();  // #screen_title,
+          $('#power_led').css('backgroundColor', '#293133');
+          $('#screen').css('backgroundColor', '#009E9E');
           
         }
-
-        console.info('power');
 
       }
 
     }),
-
-    $('<div>', {
-      id: 'power_label',
-      text: 'power'
-    })
-
     
-//                    $('<img />', {
-//                        id: 'jack_in',
-//                        src: 'img/jack.png'
-//                    }),
-//
-//                            
-//                    $('<img />', {
-//                        id: 'jack_out',
-//                        src: 'img/jack.png'
-//                    })
+    
+    /* bypass */
+    
+    $('<div>', {
+      id: 'bypass_label',
+      class: 'label',
+      text: 'bypass'
+    }),
+    
+    $('<img>').switch({
+    
+      id: 'bypass',
+      image: './lib/jqskin/img/toggle_sw_small.png',
+      title: 'bypass',
+      
+      left: 1050,
+      top: 30,
+      width: 32,
+      height: 20,
 
-  );
- 
+      clickable: true,
 
+      click: function() {
 
-  $('#bank-arrow-left, #bank-arrow-right').click(function() {
-
-    var idArrow = $(this).prop('id'),
-    currentSetListLenght = reverbSet[setList[currentSet]].length;
-
-    if (power) {
-
-      if (idArrow === 'bank-arrow-left') {
-
-        currentBank = (currentBank === 0) ? currentSetListLenght : currentBank;
-
-        $('#screen_bank').empty()
-        .append(
-          reverbSet[setList[currentSet]][--currentBank]
-        );
-
-      } else if (idArrow === 'bank-arrow-right') {
-
-        currentBank = (currentBank === currentSetListLenght - 1) ? 0 : ++currentBank;
-
-        $('#screen_bank').empty()
-        .append(
-          reverbSet[setList[currentSet]][currentBank]
-        );
-
+        reverb.bypassOnOff();
+        
+        if (reverb.isPowered()) {
+          if (reverb.isBypassed()) {
+            $('#screen_bypass').show();
+          } else {
+            reverb.setWetGain($('#wet')
+              .knob('value'));
+            $('#screen_bypass').hide();
+          }
+        }
+        
       }
 
-      $('#screen_set').empty()
-      .append(
-        setList[currentSet]
-      );
-
-
-      loadReverb(reverbSet, setList, currentSet, currentBank);
-
-    }
-
-  });
-
-
-
+    }),
+     
+     
+     $('<div>', {
+       id: 'dry_gain',
+       text: reverb.getDryGain() + '%'
+     }),
+     
+     $('<div>', {
+       id: 'wet_gain',
+       text: reverb.getWetGain() + '%'
+     })
+     
+  );
+ 
+  
+  
+  
   $('#set_btn').click(function() {
-
-    if (power) {
-
-      var setLength = Object.keys(reverbSet).length;
-
-      currentBank = 0,
-      currentSet = (currentSet === setLength - 1) ? 0 : ++currentSet;
-
-      $('#screen_set').empty()
-        .append(
-          setList[currentSet]
-        );
-
-      $('#screen_bank').empty()
-        .append(
-          reverbSet[setList[currentSet]][currentBank]
-        );
-
-      loadReverb(reverbSet, setList, currentSet, currentBank);
-
-    }
-
+    
+    reverb.loadSet();
+    
+    $('#screen_set').empty()
+      .append(reverb.getCurrentSet());
+    
+    $('#screen_bank').empty()
+      .append(reverb.getCurrentBank());
+    
+  });
+  
+  
+  $('#bank-arrow-right').click(function() {
+    reverb.nextBank()
+    $('#screen_bank')
+      .empty()
+      .append(reverb.getCurrentBank());
+  });
+  
+  
+  $('#bank-arrow-left').click(function() {
+    reverb.previousBank()
+    $('#screen_bank')
+      .empty()
+      .append(reverb.getCurrentBank());
   });
 
 
-})
+  $('#preset_btn').click(function() {
+    reverb.preset();
+  })
+  
+  $('#reverse_btn').click(function() {
+    reverb.reverse();
+  })
+  
+  $('#status_btn').click(function() {
+    reverb.status();
+  })
+  
+});
+
