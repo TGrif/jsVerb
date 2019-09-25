@@ -70,18 +70,18 @@ $(function() {
     }),
     
     
-    /* reverse */
+    /* load */
    
-    // $('<img>', {
-    //   id: 'reverse_btn',
-    //   src: 'img/preset_button.png',
-    //   // title: 'Reverse computed reverb'
-    // }),
-    // 
-    // $('<div>', {
-    //   id: 'reverse_label',
-    //   text: 'rev'
-    // }),
+    $('<img>', {
+      id: 'load_btn',
+      src: 'img/preset_button.png',
+      title: 'Load impulse response'
+    }),
+    
+    $('<div>', {
+      id: 'load_label',
+      text: 'load'
+    }),
     
     
     /* infos */
@@ -182,19 +182,21 @@ $(function() {
 
         if (reverb.isPowered()) {
           
-          $('#screen_set').empty()
-            .append(reverb.getCurrentSet());
-            
-          $('#screen_bank').empty()
-            .append(reverb.getCurrentBank());
+          if (reverb.isBypassed()) {
+            $('#bypass_label').css('color', 'tomato');
+          }
+          
+          $('#screen_set').empty().append(reverb.getCurrentSet());
+          $('#screen_bank').empty().append(reverb.getCurrentBank());
               
           // TODO remplacer par une ou plusieurs class
-          $('#screen_bank, #screen_set, #dry_gain, #wet_gain').show(); // #screen_title, 
-          if (reverb.bypass) $('#screen_bypass').show();
+          $('#screen_bank, #screen_set, #dry_gain, #wet_gain').show(); // #screen_title,
           $('#power_led').css('backgroundColor', 'blue');
           $('#screen').css('backgroundColor', '#00FFFF'); //cyan
           
         } else {
+          
+          $('#bypass_label').css('color', 'white');
           
           $('#screen_bank, #screen_set, #dry_gain, #wet_gain').hide();  // #screen_title,
           $('#power_led').css('backgroundColor', '#293133');
@@ -234,11 +236,10 @@ $(function() {
         
         if (reverb.isPowered()) {
           if (reverb.isBypassed()) {
-            $('#screen_bypass').show();
+            $('#bypass_label').css('color', 'tomato');
           } else {
-            reverb.setWetGain($('#wet')
-              .knob('value'));
-            $('#screen_bypass').hide();
+            reverb.setWetGain($('#wet').knob('value'));
+            $('#bypass_label').css('color', 'white');
           }
         }
         
@@ -263,44 +264,74 @@ $(function() {
   
   
   $('#set_btn').click(function() {
-    
-    reverb.loadSet();
-    
-    $('#screen_set').empty()
-      .append(reverb.getCurrentSet());
-    
-    $('#screen_bank').empty()
-      .append(reverb.getCurrentBank());
-    
+    if (reverb.isPowered()) {
+      reverb.loadSet();
+      $('#screen_set').empty().append(reverb.getCurrentSet());
+      $('#screen_bank').empty().append(reverb.getCurrentBank());
+    }
   });
   
   
   $('#bank-arrow-right').click(function() {
-    reverb.nextBank()
-    $('#screen_bank')
-      .empty()
-      .append(reverb.getCurrentBank());
+    if (reverb.isPowered()) {
+      reverb.nextBank();
+      $('#screen_bank').empty().append(reverb.getCurrentBank());
+    }
   });
   
   
   $('#bank-arrow-left').click(function() {
-    reverb.previousBank()
-    $('#screen_bank')
-      .empty()
-      .append(reverb.getCurrentBank());
+    if (reverb.isPowered()) {
+      reverb.previousBank();
+      $('#screen_bank').empty().append(reverb.getCurrentBank());
+    }
   });
 
 
-  $('#preset_btn').click(function() {
-    reverb.preset();
+  $('#preset_btn').click(function() {  // TODO
+    if (!window.localStorage)
+      return console.error('Sorry, preset not supported.');
+    if (reverb.isPowered()) {
+      var state = 'LOAD';
+      var clickDisabled = false;
+      $('#screen_preset').text(state + ' USER PRESET?');
+      setTimeout(function() {
+        $('#preset_btn').click(function() {  // TODO remove event listener    https://stackoverflow.com/a/8335433/5156280
+          if (clickDisabled) return
+          console.log('jsVerb - Loading userPreset:', userPreset);
+          var userPreset = window.localStorage.getItem('jsVerb');
+          reverb.preset(userPreset);
+          $('#screen_preset').text('LOADING PRESET!');
+        })
+        
+        $('#screen_preset').text('');
+        clickDisabled = true;
+      }, 4000)
+    }
   })
   
-  $('#reverse_btn').click(function() {
-    reverb.reverse();
+  
+  $('#load_btn').click(function() {
+    $('#irInput').click();
   })
+  
+  $('#irInput').change(function(ev) {
+    var file = ev.target.files[0];
+    $('#screen_set').empty().append('perso');
+    $('#screen_bank').empty().append(ev.target.files[0].name);
+    reverb.loadBank(file);  // TODO handle loading error
+  })
+  
   
   $('#status_btn').click(function() {
-    reverb.status();
+    if (reverb.isPowered()) {
+      var st = reverb.status();
+      var msg = st['bank'] + ' banks, ' + st['set'] + ' sets, reversed: ' + st['reversed'];
+      $('#screen_preset').text(msg);
+      setTimeout(function() {
+        $('#screen_preset').text('');
+      }, 4000)
+    }
   })
   
 });

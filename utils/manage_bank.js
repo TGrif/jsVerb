@@ -28,6 +28,8 @@ if (!params[2] || params[2] === '--help') {
   let bank = params[3];
   // TODO scan new bank automaticaly if no arg
   newBankPath = bank;
+} else if (params[2] === '--del') {
+  // TODO delete bank
 }
 
 

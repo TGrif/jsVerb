@@ -42,9 +42,12 @@ class jsVerb {
     this.currentBank = 0;
     
     this.computedReverse = false;
+    this.persoBuffer = new ArrayBuffer();  // TODO
     
     this.power = false;
     this.bypass = false;
+    
+    this.presetState = 0;  // 0 -> load, 1 -> save  // TODO
     
     this.destination = audioCtx.destination;
     
@@ -61,20 +64,32 @@ class jsVerb {
   }
   
   getCurrentSet() {
-    if (!this.power) return;
+    // if (!this.power) return;  // TODO déplacer la logique de power on sur la démo, jsVerb always on...
     return this.setList[this.currentSet];
   }
   
   getSetLength() {
-    return this.setList.length;
+    return (this.setList.indexOf('perso') !== -1)
+             ? this.setList.length - 1
+             : this.setList.length;
   }
   
   getCurrentSetLength() {
     return this.reverbSet[this.getCurrentSet()].length;
   }
   
+  getAllBankLength() {
+    var nbBank = 0;
+    for (var b in this.reverbSet) {
+      if (b !== 'perso') {
+        nbBank += this.reverbSet[b].length;
+      }
+    }
+    return nbBank;
+  }
+  
   getCurrentBank() {
-    if (!this.power) return;
+    // if (!this.power) return;
     return this.reverbSet[this.getCurrentSet()][this.currentBank];
   }
   
@@ -104,7 +119,7 @@ class jsVerb {
   }
   
   bypassOnOff() {
-    if (!this.power) return;
+    // if (!this.power) return;
     this.bypass = !this.bypass;
     if (this.bypass) {
       this.wetGain.disconnect();
@@ -117,35 +132,63 @@ class jsVerb {
     return this.bypass;
   }
   
-  preset() {  // TODO long press to save...
-    if (!this.power) return;
-    if (!window.localStorage)
-      return console.error('Sorry, preset not supported.');
-    var userPreset = window.localStorage.getItem('jsVerb');
-    console.log('jsVerb - Loading userPreset:', userPreset);
+  preset(userPreset) {  // TODO long press to save...
+    // if (!this.power) return;
+    // console.log(this.presetState);
+    this.presetState < 1
+      ? this.presetState++
+      : this.presetState = 0;
+      
   }
   
-  isReversed() {
+  loadBank(file) {
+    console.info('jsVerb - Loading ir:', file.name);
+
+    switch (file.type) {
+      case 'audio/x-wav': break;
+      case 'video/ogg': break;
+      default: return console.info('Format non pris en charge:', file.type);
+    }
+    
+    this.reverbSet['perso'] = [file.name];
+    this.setList.push('perso');
+
+    this.currentSet = this.setList.indexOf('perso');
+    this.currentBank = 0;
+    
+    var reader = new FileReader();
+    reader.onload = el => {
+      this.persoBuffer = el.target.result;
+      this.loadReverb();
+    }
+    reader.readAsArrayBuffer(file);  //TODO sharedArrayBuffer   https://github.com/WebAudio/web-audio-api/issues/1175
+                                    // ou supprimer la banque perso lors du changement de set
+  }
+  
+  isReversed() {  // TODO à supprimer
     return this.computedReverse;
   }
   
-  reverse() {
-    if (!this.power) return;
+  reverse() {  // TODO à supprimer
+    // if (!this.power) return;
     this.computedReverse = !this.computedReverse;
     console.log('jsVerb - Reversed computed reverb:', this.computedReverse);
   }
   
-  status() {  // TODO
-    if (!this.power) return;
-    var status = {
-      set: this.getSetLength(),
-      reversed: this.isReversed()
+  status() {
+    // if (!this.power) return;
+    var sl = this.getSetLength();
+    var bl = this.getAllBankLength();
+    console.info('jsVerb - Status:', sl, 'sets,', bl, 'banks');
+    return {
+      set: sl,
+      bank: bl,
+      reversed: this.isReversed()  // pas utile car affichage reversed sur ce presset TODO
     }
-    console.log('jsVerb - Status: ', status)
   }
   
   loadSet() {
-    if (!this.power) return;
+    // if (!this.power) return;
     this.currentBank = 0;
     if (this.setList.length - 1 == this.currentSet) {
       this.currentSet = 0;
@@ -157,7 +200,7 @@ class jsVerb {
   }
   
   nextBank() {
-    if (!this.power) return;
+    // if (!this.power) return;
     if (this.getCurrentSetLength() === 1) return;
     if (this.currentBank === this.getCurrentSetLength() - 1) {
       this.currentBank = 0;
@@ -169,7 +212,7 @@ class jsVerb {
   }
   
   previousBank() {
-    if (!this.power) return;
+    // if (!this.power) return;
     if (this.getCurrentSetLength() === 1) return;
     if (this.currentBank === 0) {
       this.currentBank = this.getCurrentSetLength() - 1;
@@ -206,13 +249,26 @@ class jsVerb {
     }
   }
   
-  loadReverb() {
-    if (!this.power) return;
+  loadReverb(perso_buffer) {
+    // if (!this.power) return;
     
     var currentSet = this.getCurrentSet();
     
+    /* computed reverb */
+    if (currentSet === 'computed') {
+      this.convolver.buffer = this.computedReverb(2, 2);
+      
+      /* perso reverb */
+    } else if (currentSet === 'perso') {
+      console.log('jsVerb - Loading perso reverb.')
+      
+        // TODO sauvegarder perso_buffer
+      this.audioCtx.decodeAudioData(this.persoBuffer, data => {
+        this.convolver.buffer = data;
+      })
+      
       /* convolution reverb */
-    if (currentSet !== 'computed') {
+    } else {
       
       var irFile = this.irDirectory + currentSet + '/' + this.getCurrentBank();
       
@@ -226,9 +282,6 @@ class jsVerb {
         }
       }, err => console.error);
       
-      /* computed reverb */
-    } else {
-      this.convolver.buffer = this.computedReverb(2, 2);
     }
     
   }
