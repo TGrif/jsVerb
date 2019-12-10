@@ -13,6 +13,8 @@ $(function() {
   var reverb = new jsVerb(audioCtx);
   var player = new SimpleAudioPlayer(audioCtx);
   
+  var powered = false;
+  
   reverb.plug(player.output(), destination)
 
 
@@ -61,12 +63,14 @@ $(function() {
     $('<img>', {
       id: 'preset_btn',
       src: 'img/preset_button.png',
-      // title: 'Load user preset'
+      title: 'Load/save user preset',
+      class: 'btn'
     }),
     
     $('<div>', {
       id: 'preset_label',
-      text: 'usr'
+      text: 'usr',
+      class: 'btn_label'
     }),
     
     
@@ -75,12 +79,14 @@ $(function() {
     $('<img>', {
       id: 'load_btn',
       src: 'img/preset_button.png',
-      title: 'Load impulse response'
+      title: 'Load impulse response',
+      class: 'btn'
     }),
     
     $('<div>', {
       id: 'load_label',
-      text: 'load'
+      text: 'load',
+      class: 'btn_label'
     }),
     
     
@@ -89,14 +95,32 @@ $(function() {
     $('<img>', {
       id: 'status_btn',
       src: 'img/preset_button.png',
-      title: 'Status'
+      title: 'Status',
+      class: 'btn'
     }),
     
     $('<div>', {
       id: 'status_label',
-      text: 'nfo'
+      text: 'nfo',
+      class: 'btn_label'
     }),
+    
+    
+    /* panic */
    
+    $('<img>', {
+      id: 'panic_btn',
+      src: 'img/preset_button.png',
+      title: 'Panic. Stop all sound',
+      class: 'btn'
+    }),
+    
+    $('<div>', {
+      id: 'panic_label',
+      text: 'panic',
+      class: 'btn_label'
+    }),
+    
     
       /* dry */
     
@@ -178,9 +202,9 @@ $(function() {
 
       click: function() {
 
-        reverb.powerOnOff();
-
-        if (reverb.isPowered()) {
+        powered = !powered;
+        
+        if (powered) {
           
           if (reverb.isBypassed()) {
             $('#bypass_label').css('color', 'tomato');
@@ -234,7 +258,7 @@ $(function() {
 
         reverb.bypassOnOff();
         
-        if (reverb.isPowered()) {
+        if (powered) {
           if (reverb.isBypassed()) {
             $('#bypass_label').css('color', 'tomato');
           } else {
@@ -262,9 +286,8 @@ $(function() {
  
   
   
-  
   $('#set_btn').click(function() {
-    if (reverb.isPowered()) {
+    if (powered) {
       reverb.loadSet();
       $('#screen_set').empty().append(reverb.getCurrentSet());
       $('#screen_bank').empty().append(reverb.getCurrentBank());
@@ -273,7 +296,7 @@ $(function() {
   
   
   $('#bank-arrow-right').click(function() {
-    if (reverb.isPowered()) {
+    if (powered) {
       reverb.nextBank();
       $('#screen_bank').empty().append(reverb.getCurrentBank());
     }
@@ -281,17 +304,20 @@ $(function() {
   
   
   $('#bank-arrow-left').click(function() {
-    if (reverb.isPowered()) {
+    if (powered) {
       reverb.previousBank();
       $('#screen_bank').empty().append(reverb.getCurrentBank());
     }
   });
 
 
+
   $('#preset_btn').click(function() {  // TODO
+    
     if (!window.localStorage)
       return console.error('Sorry, preset not supported.');
-    if (reverb.isPowered()) {
+      
+    if (powered) {
       var state = 'LOAD';
       var clickDisabled = false;
       $('#screen_preset').text(state + ' USER PRESET?');
@@ -308,6 +334,7 @@ $(function() {
         clickDisabled = true;
       }, 4000)
     }
+    
   })
   
   
@@ -324,13 +351,21 @@ $(function() {
   
   
   $('#status_btn').click(function() {
-    if (reverb.isPowered()) {
-      var st = reverb.status();
-      var msg = st['bank'] + ' banks, ' + st['set'] + ' sets, reversed: ' + st['reversed'];
+    if (powered) {
+      // var st = reverb.status();
+      var msg = reverb.status()['set'] + ' sets - ' + reverb.status()['bank'] + ' banks';
+      // var msg = st['bank'] + ' banks, ' + st['set'] + ' sets.';
       $('#screen_preset').text(msg);
       setTimeout(function() {
         $('#screen_preset').text('');
       }, 4000)
+    }
+  })
+  
+  
+  $('#panic_btn').click(function() {
+    if (powered) {
+      reverb.panic();
     }
   })
   

@@ -8,11 +8,13 @@
 console.log('jsVerb - Manage Bank');
 
 const fs = require('fs');
-const { parse } = require('path');
+const { parse, join } = require('path');
 
-const irPath = '/ir/';
+const irPath = '/ir/';  //path.join(__dirname, '.' + irPath)
+// const irPath = join(__dirname, 'ir');
 const irConfigFilePath = irPath + '/ir.json';
 const ir = require('..' + irConfigFilePath);
+// const ir = require(irConfigFilePath);
 
 const irSupportedExtensions = ['.ogg', '.wav'];
 
@@ -81,7 +83,8 @@ function updateBank() {
 (async function proceed() {
   await readDirectory('.' + irPath + newBankPath)
     .then(files => {
-      ir.reverbSet[newBankPath] = files;
+      if (files.length) ir.reverbSet[newBankPath] = files;
+      else console.log('No ir file found.')
     })
     .then(updateBank)
     .catch(console.log);

@@ -14,7 +14,7 @@ class jsVerb {
     this.audioCtx = audioCtx;
     
     this.irDirectory = '../ir/';
-    this.irExtension = '.ogg';
+    this.irExtensions = ['.ogg', '.wav'];
     
     this.getIrConfig();
     
@@ -44,7 +44,6 @@ class jsVerb {
     this.computedReverse = false;
     this.persoBuffer = new ArrayBuffer();  // TODO
     
-    this.power = false;
     this.bypass = false;
     
     this.presetState = 0;  // 0 -> load, 1 -> save  // TODO
@@ -64,7 +63,6 @@ class jsVerb {
   }
   
   getCurrentSet() {
-    // if (!this.power) return;  // TODO déplacer la logique de power on sur la démo, jsVerb always on...
     return this.setList[this.currentSet];
   }
   
@@ -89,7 +87,6 @@ class jsVerb {
   }
   
   getCurrentBank() {
-    // if (!this.power) return;
     return this.reverbSet[this.getCurrentSet()][this.currentBank];
   }
   
@@ -109,17 +106,7 @@ class jsVerb {
     this.wetGain.gain.value = value / 100;
   }
   
-  powerOnOff() {
-    this.power = !this.power;
-    if (this.power) this.loadReverb();
-  }
-  
-  isPowered() {
-    return this.power;
-  }
-  
   bypassOnOff() {
-    // if (!this.power) return;
     this.bypass = !this.bypass;
     if (this.bypass) {
       this.wetGain.disconnect();
@@ -133,7 +120,6 @@ class jsVerb {
   }
   
   preset(userPreset) {  // TODO long press to save...
-    // if (!this.power) return;
     // console.log(this.presetState);
     this.presetState < 1
       ? this.presetState++
@@ -165,30 +151,22 @@ class jsVerb {
                                     // ou supprimer la banque perso lors du changement de set
   }
   
-  isReversed() {  // TODO à supprimer
-    return this.computedReverse;
-  }
-  
-  reverse() {  // TODO à supprimer
-    // if (!this.power) return;
-    this.computedReverse = !this.computedReverse;
-    console.log('jsVerb - Reversed computed reverb:', this.computedReverse);
-  }
-  
   status() {
-    // if (!this.power) return;
-    var sl = this.getSetLength();
-    var bl = this.getAllBankLength();
-    console.info('jsVerb - Status:', sl, 'sets,', bl, 'banks');
-    return {
-      set: sl,
-      bank: bl,
-      reversed: this.isReversed()  // pas utile car affichage reversed sur ce presset TODO
+    var status = {
+      set: this.getSetLength(),
+      bank: this.getAllBankLength()
     }
+    console.info('jsVerb - Status:', status.set, 'sets,', status.bank, 'banks');
+    return status;
+  }
+  
+  panic() {
+    console.info('jsVerb - Panic');
+    this.audioCtx.suspend();
+    // this.audioCtx.resume();  // TODO voir si resume clear audiocontext
   }
   
   loadSet() {
-    // if (!this.power) return;
     this.currentBank = 0;
     if (this.setList.length - 1 == this.currentSet) {
       this.currentSet = 0;
@@ -200,27 +178,32 @@ class jsVerb {
   }
   
   nextBank() {
-    // if (!this.power) return;
     if (this.getCurrentSetLength() === 1) return;
     if (this.currentBank === this.getCurrentSetLength() - 1) {
       this.currentBank = 0;
     } else {
       ++this.currentBank;
     }
+    if (this.setList[this.currentSet] === 'computed') {
+      this.computedReverse = !this.computedReverse;
+    }
     this.loadReverb();
-    console.info('jsVerb - Loading next bank:', this.getCurrentBank())
+    console.info('jsVerb - Loading next bank:', this.getCurrentBank());
+    
   }
   
   previousBank() {
-    // if (!this.power) return;
     if (this.getCurrentSetLength() === 1) return;
     if (this.currentBank === 0) {
       this.currentBank = this.getCurrentSetLength() - 1;
     } else {
       --this.currentBank;
     }
+    if (this.setList[this.currentSet] === 'computed') {
+      this.computedReverse = !this.computedReverse;
+    }
     this.loadReverb();
-    console.info('jsVerb - Loading previous bank:', this.getCurrentBank())
+    console.info('jsVerb - Loading previous bank:', this.getCurrentBank());
   }
   
   computedReverb(duration, decay) {  // https://stackoverflow.com/a/22538980/5156280
@@ -233,7 +216,7 @@ class jsVerb {
     var impulseR = impulse.getChannelData(1);
 
     for (var i = 0; i < length; i++) {
-      var n = this.computedReverse ? length - i : i;  // TODO pas de diff sonore sur le reversed
+      var n = this.computedReverse ? length - i : i;  // FIXME pas de diff sonore sur le reversed
       impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
       impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
     }
@@ -243,18 +226,17 @@ class jsVerb {
 
   loadImpuseResponse(file) {
     try {
-      this.convolver.buffer = this.loadSound(this.convolver, file);
+      /*this.convolver.buffer = */this.loadSound(this.convolver, file);
     } catch (err) {
       console.error(err);
     }
   }
   
   loadReverb(perso_buffer) {
-    // if (!this.power) return;
     
     var currentSet = this.getCurrentSet();
     
-    /* computed reverb */
+      /* computed reverb */
     if (currentSet === 'computed') {
       this.convolver.buffer = this.computedReverb(2, 2);
       
@@ -271,19 +253,23 @@ class jsVerb {
     } else {
       
       var irFile = this.irDirectory + currentSet + '/' + this.getCurrentBank();
-      
-      fetch(irFile + '.ogg').then(response => {
-        if (response.ok) {
-          this.loadImpuseResponse(irFile + this.irExtension);
-        } else {  // TODO best support for other formats
-          fetch(irFile + '.wav').then(response => {
-            this.loadImpuseResponse(irFile + '.wav');
-          }, err => console.error);
+    
+      for (let i in this.irExtensions) {
+        let file = irFile + this.irExtensions[i];
+        if (this.checkImpulseType(file)) {
+          return this.loadImpuseResponse(file);
         }
-      }, err => console.error);
+      }
       
     }
     
+  }
+  
+  checkImpulseType(file) {
+    var http = new XMLHttpRequest();
+    http.open('HEAD', file, false);
+    http.send();
+    return http.status != 404;
   }
   
   loadSound(dest, file) {

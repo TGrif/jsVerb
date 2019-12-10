@@ -157,14 +157,15 @@ input[type=range]::-moz-range-thumb:hover {
   height: 41px;
   margin-top: -41px;
   /* background-color: #293133; */
-  background-color: white;
-  /* color: white; */
+  /* background-color: darkgrey; */
   color: black;
+  /* color: white; */
   border-bottom: 1px solid white;
   /* display: none; */
 }
 
 #sap-file {
+  margin-left: 8px;
   padding-top: 8px;
 }
 

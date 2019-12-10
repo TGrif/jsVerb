@@ -4,6 +4,10 @@
   margin: 0;
 }
 
+body {
+  background-color: #efefef;
+}
+
 #label_studio {
   font-weight: bold;
 }
@@ -21,12 +25,9 @@
   font-size: 13px;
 }
 
+.btn,
 #power,
 #bypass,
-#preset_btn,
-#status_btn,
-#load_btn,
-#set_btn,
 #bank-arrow-left,
 #bank-arrow-right,
 #wet,
@@ -181,57 +182,63 @@
   font-size: 10px;
 }
 
+
+.btn_label {
+  position: absolute;
+  margin-top: 106px;
+  font-style: italic;
+  font-size: 9px;
+  color: white;
+}
+
+.btn {
+  position: absolute;
+}
+
 #preset_btn {
   margin-left: 75px;
   margin-top: 120px;
-  position: absolute;
   height: 9px;
 }
 
 #preset_label {
-  position: absolute;
-  font-style: italic;
   margin-left: 76px;
-  margin-top: 106px;
-  font-size: 9px;
-  color: white;
 }
 
 #load_btn {
   margin-left: 146px;
   margin-top: 120px;
-  position: absolute;
   height: 9px;
 }
 
 #load_label {
-  position: absolute;
-  font-style: italic;
   margin-left: 145px;
-  margin-top: 106px;
-  font-size: 9px;
-  color: white;
 }
 
 #status_btn {
   margin-left: 106px;
   margin-top: 120px;
-  position: absolute;
   height: 9px;
 }
 
 #status_label {
-  position: absolute;
-  font-style: italic;
   margin-left: 107px;
-  margin-top: 106px;
-  font-size: 9px;
-  color: white;
+}
+
+#panic_btn {
+  margin-left: 195px;
+  margin-top: 120px;
+  height: 9px;
+}
+
+#panic_label {
+  margin-left: 191px;
+  color: lightgrey;
 }
 
 #simple_player {
   position: absolute;
-  margin-top: 88px;
+  margin-top: 62px;
   margin-left: 1340px;
 }
 
