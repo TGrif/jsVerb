@@ -2,13 +2,13 @@
   "name": "jsVerb",
   "version": "2.0.0",
   "description": "Web-Audio Digital Reverb",
+  "author": "TGrif",
+  "license": "MIT",
   "main": "src/jsVerb.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TGrif/jsVerb.git"
   },
-  "author": "TGrif",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/TGrif/jsVerb/issues"
   },

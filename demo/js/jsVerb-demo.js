@@ -287,53 +287,49 @@ $(function() {
   
   
   $('#set_btn').click(function() {
-    if (powered) {
-      reverb.loadSet();
-      $('#screen_set').empty().append(reverb.getCurrentSet());
-      $('#screen_bank').empty().append(reverb.getCurrentBank());
-    }
+    if (!powered) return;
+    reverb.loadSet();
+    $('#screen_set').empty().append(reverb.getCurrentSet());
+    $('#screen_bank').empty().append(reverb.getCurrentBank());
   });
   
   
   $('#bank-arrow-right').click(function() {
-    if (powered) {
-      reverb.nextBank();
-      $('#screen_bank').empty().append(reverb.getCurrentBank());
-    }
+    if (!powered) return;
+    reverb.nextBank();
+    $('#screen_bank').empty().append(reverb.getCurrentBank());
   });
   
   
   $('#bank-arrow-left').click(function() {
-    if (powered) {
-      reverb.previousBank();
-      $('#screen_bank').empty().append(reverb.getCurrentBank());
-    }
+    if (!powered) return;
+    reverb.previousBank();
+    $('#screen_bank').empty().append(reverb.getCurrentBank());
   });
 
 
 
   $('#preset_btn').click(function() {  // TODO
+    if (!powered) return;
     
     if (!window.localStorage)
       return console.error('Sorry, preset not supported.');
       
-    if (powered) {
-      var state = 'LOAD';
-      var clickDisabled = false;
-      $('#screen_preset').text(state + ' USER PRESET?');
-      setTimeout(function() {
-        $('#preset_btn').click(function() {  // TODO remove event listener    https://stackoverflow.com/a/8335433/5156280
-          if (clickDisabled) return
-          console.log('jsVerb - Loading userPreset:', userPreset);
-          var userPreset = window.localStorage.getItem('jsVerb');
-          reverb.preset(userPreset);
-          $('#screen_preset').text('LOADING PRESET!');
-        })
-        
-        $('#screen_preset').text('');
-        clickDisabled = true;
-      }, 4000)
-    }
+    var state = 'LOAD';
+    var clickDisabled = false;
+    $('#screen_preset').text(state + ' USER PRESET?');
+    setTimeout(function() {
+      $('#preset_btn').click(function() {  // TODO remove event listener    https://stackoverflow.com/a/8335433/5156280
+        if (clickDisabled) return
+        console.log('jsVerb - Loading userPreset:', userPreset);
+        var userPreset = window.localStorage.getItem('jsVerb');
+        reverb.preset(userPreset);
+        $('#screen_preset').text('LOADING PRESET!');
+      })
+      
+      $('#screen_preset').text('');
+      clickDisabled = true;
+    }, 4000)
     
   })
   
@@ -351,23 +347,33 @@ $(function() {
   
   
   $('#status_btn').click(function() {
-    if (powered) {
-      // var st = reverb.status();
-      var msg = reverb.status()['set'] + ' sets - ' + reverb.status()['bank'] + ' banks';
-      // var msg = st['bank'] + ' banks, ' + st['set'] + ' sets.';
-      $('#screen_preset').text(msg);
+    if (!powered) return;
+    let rs = reverb.status();
+    let msg = rs['set'] + ' sets - ' + rs['bank'] + ' banks';
+    $('#screen_preset').text(msg);
+    setTimeout(function() {
+      $('#screen_preset').text('');
+    }, 4000)
+  })
+  
+  
+  let panic = 0;
+  $('#panic_btn').click(function() {
+    if (!powered) return;
+    reverb.panic();
+  
+    //easter egg
+    panic++;
+    if (panic >= 3) {
+      $('#screen_preset').text('Please, stay calm.');
       setTimeout(function() {
         $('#screen_preset').text('');
-      }, 4000)
+      }, 3500);
+      panic = 0;
     }
-  })
-  
-  
-  $('#panic_btn').click(function() {
-    if (powered) {
-      reverb.panic();
-    }
-  })
+    setTimeout(function() {
+      panic = 0;
+    }, 1000);
+  });
   
 });
-
