@@ -133,7 +133,11 @@ class jsVerb {
     switch (file.type) {
       case 'audio/x-wav': break;
       case 'video/ogg': break;
-      default: return console.info('Format non pris en charge:', file.type);
+      default: {
+        let err = 'Format non pris en charge: ' + file.type;
+        console.info(err);
+        return false;
+      }
     }
     
     this.reverbSet['perso'] = [file.name];
@@ -149,6 +153,7 @@ class jsVerb {
     }
     reader.readAsArrayBuffer(file);  //TODO sharedArrayBuffer   https://github.com/WebAudio/web-audio-api/issues/1175
                                     // ou supprimer la banque perso lors du changement de set
+    return true;
   }
   
   status() {

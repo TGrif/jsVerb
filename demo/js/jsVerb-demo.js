@@ -336,14 +336,20 @@ $(function() {
   
   $('#load_btn').click(function() {
     $('#irInput').click();
-  })
+  });
   
   $('#irInput').change(function(ev) {
     var file = ev.target.files[0];
-    $('#screen_set').empty().append('perso');
-    $('#screen_bank').empty().append(ev.target.files[0].name);
-    reverb.loadBank(file);  // TODO handle loading error
-  })
+    if (reverb.loadBank(file)) {
+      $('#screen_set').empty().append('perso');
+      $('#screen_bank').empty().append(file.name);
+    } else {
+      $('#screen_preset').text('Format non supporté');
+      setTimeout(function() {
+        $('#screen_preset').text('');
+      }, 4000);
+    }
+  });
   
   
   $('#status_btn').click(function() {
@@ -353,8 +359,8 @@ $(function() {
     $('#screen_preset').text(msg);
     setTimeout(function() {
       $('#screen_preset').text('');
-    }, 4000)
-  })
+    }, 4000);
+  });
   
   
   let panic = 0;
