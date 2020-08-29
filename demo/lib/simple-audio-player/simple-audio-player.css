@@ -16,7 +16,7 @@
     overflow: hidden;
     width: 80px;
     -webkit-appearance: none;
-    /* background-color: #9a905d; */
+    background-color: #293133;
   }
   
   input[type='range']::-webkit-slider-runnable-track {
@@ -40,7 +40,7 @@
 /* TODO associer à la class sap */
 /** FF*/
 input[type="range"]::-moz-range-progress {
-  background-color: white;
+  background-color: lightgrey;
   height: 5px;
   border-radius: 8px;
 }
